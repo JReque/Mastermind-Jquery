@@ -26,6 +26,7 @@
 			$('#contentFilas').append($fila);
 			for (let b= 0; b < 4; b++) {
 				$bola = $("<div></div>")
+							.attr('id', b)
 								.addClass('socket');
 				$($('.intentoFila')[$contador]).fadeOut().append($bola);
 			}
@@ -48,7 +49,6 @@
 		}
 
 		$seleccionados = $($('.intentoFila')[$contador]);
-
 		$seleccionados.toggle( "slide", "slow" );
 	}
 
@@ -57,34 +57,32 @@
 		borrar();
 
 		let self = this;
-		let $slots = $('.intentoFila')[($incrementarFila)].getElementsByClassName('socket');
-		//let $slots = $('.intentoFila:last .socket').not('.color').first();
-		//console.log( $slots );
 
-		//let $slotsRemove = $('.intentoFila')[($incrementarFila)].getElementsByClassName('socket removed');
-		let $slotsRemove = $('.intentoFila:last .socket:first');
-		let $slotsRemove2 = $('.intentoFila:last .socket').not('.color');
-		console.log($slotsRemove2.length);
-
+		let $slots = $('.intentoFila:last .socket').not('.color').first();
+		
+		let $slotsRemove = $('.intentoFila:last .removed');
 		try {
-			if ($slotsRemove2.length < 4 && jQuery.inArray('removed', $intentoFila) ) {
+			if ($slotsRemove.length > 0 ) {
 				for (let i = 0; i < $intentoFila.length; i++) 
-				{
-					if ($intentoFila[i] == 'removed' && $slots.attr( "class", "socket" )) 
+				{	 var formid = $slots.attr('id');
+					if ($slots.hasClass('socket removed') === true )
+					{
+						$intentoFila.splice($slots.attr('id'), 1, 'removed');		
+					}
+					if ($intentoFila[i] == 'removed' && $slots.attr( "class", "socket removed" )) 
 					{
 						$slots.addClass(' color '  + self.id );
-						$slots.className = 'socket color ' + self.id;
+						$slots.removeClass('removed');
 						$intentoFila.splice(i, 1, Number(self.value));
 						break;
 					}				
 				}
 			}else {
-				$slots.addClass(' color '  + self.id );
-				$intentoFila.push(+(self.value));
-			}			
-			
-		console.log($intentoFila);
-
+				if ($intentoFila.length < 4) {
+					$slots.addClass(' color '  + self.id );
+					$intentoFila.push(+(self.value));
+				}				
+			}	
 		} catch( err ) {}
 
 		//Comprobamos al pulsar el boton
@@ -99,9 +97,7 @@
 					for (let i = 0; i <= $('.intentoFila').length-1 ; i++) {
 						$($('.intentoFila')[i]).prop( "disabled", true )
 												.addClass('intentoFila disabledbutton');
-					};
-
-			
+					};			
 					pintarContenedor();				
 				}				
 			}	
@@ -114,7 +110,7 @@
 		let myFunction = function() {			
 			let $classtype = $(this).attr('class');
 			if ($(this).hasClass('socket color') ) {
-				$(this).attr( "class", "socket" );
+				$(this).attr( "class", "socket removed" );
 			}
 		};
 		Array.from(allsockets).forEach(function(element) {
@@ -169,6 +165,7 @@
 		for (let i = 0; i < $('.option').length; i++)
 			$($('.option')[i]).on('click', insertarIntento);
 
+		$('#newGame').on('click', reiniciar);		
 		$('#delete').on('click', deleteLast);		
 	}
 
